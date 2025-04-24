@@ -1,0 +1,18 @@
+In line with integrating a 'delete' option for our users, I think adding in a revisions feature for the django admin
+would be beneficial. A revisions feature could track changes and make sure that you could undo deletes or other large
+changes that a human might make by accident, user or admin.
+
+from django.contrib import admin
+
+class YourModelAdmin(admin.ModelAdmin):
+    actions = ['undo_delete']
+
+    def undo_delete(self, request, queryset):
+        queryset.update(is_deleted=False)  # Restore soft-deleted items
+        self.message_user(request, "Undo successful for selected items.")
+
+    undo_delete.short_description = "Undo delete"
+
+admin.site.register(YourModel, YourModelAdmin)
+
+The django-simple-history library can do something similar and would be less code required by the admin to maintain.
